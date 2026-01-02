@@ -7,13 +7,17 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class Profile extends Component
-{
+{   
+    use WithFileUploads;
+
     public string $name = '';
 
     public string $email = '';
 
+    public $profile_photo;
     /**
      * Mount the component.
      */
@@ -40,9 +44,12 @@ class Profile extends Component
                 'email',
                 'max:255',
                 Rule::unique(User::class)->ignore($user->id),
+            'profile_photo' => ['nullable', 'image', 'max:2048'], // validasi upload
             ],
         ]);
-
+        if ($this->profile_photo) {
+            $validated['profile_photo'] = $this->profile_photo->store('profile-photos', 'public');
+        }
         $user->fill($validated);
 
         if ($user->isDirty('email')) {
