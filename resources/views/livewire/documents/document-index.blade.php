@@ -252,15 +252,15 @@
             </div>
             <div class="w-full overflow-x-auto flex flex-col space-y-6">
                 @forelse ($documents as $document)
-                    <div class="min-w-max flex flex-col">
+                    <div class="w-full flex flex-col">
                         <!-- Desktop View -->
                         <div
-                            class="hidden lg:flex w-full justify-between items-center px-5 py-7 gap-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition">
+                            class="hidden lg:grid lg:grid-cols-12 lg:gap-4 w-full px-5 py-7 rounded-2xl hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition">
                             <!-- User Info -->
-                            <div class="flex items-center gap-4">
+                            <div class="col-span-3 flex items-center gap-4 min-w-0">
                                 <img src="{{ Storage::url($document->user->profile_photo) }}" alt="User Avatar"
                                     class="h-12 w-12 rounded-full object-cover flex-shrink-0">
-                                <div class="overflow-hidden">
+                                <div class="min-w-0 flex-1">
                                     <div class="text-sm font-bold text-gray-900 dark:text-white truncate">
                                         {{ $document->user->name }}
                                     </div>
@@ -271,38 +271,97 @@
                             </div>
 
                             <!-- File Type -->
-                            <div class="flex items-center gap-2">
+                            <div class="col-span-1 flex items-center justify-center">
                                 <span
-                                    class="px-3.5 py-2 text-xs font-bold rounded-full 
-                                                {{ $document->file_type === 'pdf'
-                                                    ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'
-                                                    : 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800' }}">
+                                    class="px-3.5 py-2 text-xs font-bold rounded-full whitespace-nowrap
+                        {{ $document->file_type === 'pdf'
+                            ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'
+                            : 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800' }}">
                                     {{ strtoupper($document->file_type) }}
                                 </span>
                             </div>
 
                             <!-- Document Info -->
-                            <div class="flex flex-col items-start overflow-hidden">
-                                <div class="text-sm font-bold text-gray-900 dark:text-white truncate w-full">
+                            <div class="col-span-3 flex flex-col justify-center min-w-0">
+                                <div class="text-sm font-bold text-gray-900 dark:text-white truncate">
                                     {{ $document->title }}
                                 </div>
                                 @if ($document->description)
-                                    <div
-                                        class="text-sm text-gray-500 dark:text-gray-400 mt-0.5 font-semibold w-full truncate">
-                                        {{ Str::limit($document->description, 50) }}</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400 mt-0.5 font-semibold truncate">
+                                        {{ Str::limit($document->description, 50) }}
+                                    </div>
                                 @endif
                             </div>
 
                             <!-- File Size -->
-                            <div class="flex items-center min-w-[80px]">
-                                <div class="text-sm font-bold text-gray-900 dark:text-white">
+                            <div class="col-span-1 flex items-center justify-center">
+                                <div class="text-sm font-bold text-gray-900 dark:text-white whitespace-nowrap">
                                     {{ $document->formatted_file_size }}
                                 </div>
                             </div>
 
                             <!-- Date -->
-                            <div class="flex items-center min-w-[140px]">
-                                <div class="text-sm font-bold text-gray-900 dark:text-white">
+                            <div class="col-span-2 flex items-center justify-center">
+                                <div class="text-sm font-bold text-gray-900 dark:text-white whitespace-nowrap">
+                                    {{ $document->created_at->format('d M Y H:i') }}
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="col-span-2 flex items-center justify-end gap-2">
+                                <a href="/documents/{{ $document->id }}/edit" wire:navigate
+                                    class="px-7 py-3 bg-blue-100 text-blue-600 font-bold rounded-full text-sm hover:bg-blue-200 transition whitespace-nowrap">
+                                    Edit
+                                </a>
+                                <button wire:click="$dispatch('delete-confirm', { id: {{ $document->id }} })"
+                                    class="px-7 py-3 bg-red-100 text-red-600 font-bold rounded-full text-sm hover:bg-red-200 transition whitespace-nowrap">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Mobile/Tablet View -->
+                        <div
+                            class="lg:hidden w-full p-4 space-y-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition">
+                            <!-- User Info & File Type -->
+                            <div class="flex items-center gap-3">
+                                <img src="{{ Storage::url($document->user->profile_photo) }}" alt="User Avatar"
+                                    class="h-12 w-12 rounded-full object-cover flex-shrink-0">
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-sm font-bold text-gray-900 dark:text-white truncate">
+                                        {{ $document->user->name }}
+                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400 font-semibold truncate">
+                                        {{ $document->user->email }}
+                                    </div>
+                                </div>
+                                <span
+                                    class="px-3 py-1.5 rounded-full text-xs font-bold flex-shrink-0
+                        {{ $document->file_type === 'pdf'
+                            ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'
+                            : 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800' }}">
+                                    {{ strtoupper($document->file_type) }}
+                                </span>
+                            </div>
+
+                            <!-- Document Info -->
+                            <div class="space-y-1">
+                                <div class="text-sm font-bold text-gray-900 dark:text-white truncate">
+                                    {{ $document->title }}
+                                </div>
+                                @if ($document->description)
+                                    <div class="text-sm text-gray-500 dark:text-gray-400 font-semibold line-clamp-2">
+                                        {{ $document->description }}
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- Meta Info -->
+                            <div class="flex items-center justify-between text-sm">
+                                <div class="font-bold text-gray-900 dark:text-white">
+                                    {{ $document->formatted_file_size }}
+                                </div>
+                                <div class="font-bold text-gray-900 dark:text-white">
                                     {{ $document->created_at->format('d M Y H:i') }}
                                 </div>
                             </div>
@@ -310,62 +369,10 @@
                             <!-- Actions -->
                             <div class="flex items-center gap-2">
                                 <a href="/documents/{{ $document->id }}/edit" wire:navigate
-                                    class="px-7 py-3 bg-blue-100 text-blue-600 font-bold rounded-full text-sm hover:bg-blue-200 transition">
-                                    Edit
-                                </a>
-                                <button wire:click="$dispatch('delete-confirm', { id: {{ $document->id }} })"
-                                    class="px-7 py-3 bg-red-100 text-red-600 font-bold rounded-full text-sm hover:bg-red-200 transition">
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                        <!-- Mobile/Tablet View -->
-                        <div class="lg:hidden w-full p-4 space-y-4">
-                            <!-- User Info -->
-                            <div class="flex items-center gap-3">
-                                <img src="https://tse4.mm.bing.net/th/id/OIP.O_tdzbjIwerbyUMxkYHgYgHaE8?pid=Api&P=0&h=220"
-                                    alt="User Avatar" class="h-12 w-12 rounded-full object-cover flex-shrink-0">
-                                <div class="flex-1 overflow-hidden">
-                                    <div class="text-sm font-bold text-gray-900 dark:text-white truncate">
-                                        Amri
-                                    </div>
-                                    <div class="text-sm text-gray-500 dark:text-gray-400 font-semibold truncate">
-                                        Amri@gmail.com
-                                    </div>
-                                </div>
-                                <div
-                                    class="px-3 py-1.5 bg-blue-100 ring-1 ring-blue-700 rounded-full text-xs font-bold text-blue-600 flex-shrink-0">
-                                    DOCX
-                                </div>
-                            </div>
-
-                            <!-- Document Info -->
-                            <div class="space-y-1">
-                                <div class="text-sm font-bold text-gray-900 dark:text-white truncate">
-                                    Rahasia Negara
-                                </div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400 font-semibold line-clamp-2">
-                                    Dokumen rahasia negara penting
-                                </div>
-                            </div>
-
-                            <!-- Meta Info -->
-                            <div class="flex items-center justify-between text-sm">
-                                <div class="font-bold text-gray-900 dark:text-white">
-                                    33.1 KB
-                                </div>
-                                <div class="font-bold text-gray-900 dark:text-white">
-                                    24 Dec 2025 07:46
-                                </div>
-                            </div>
-
-                            <!-- Actions -->
-                            <div class="flex items-center gap-2">
-                                <a href="#"
                                     class="flex-1 px-4 py-2 bg-blue-100 text-blue-600 font-bold rounded-full text-sm text-center hover:bg-blue-200 transition">
                                     Edit
                                 </a>
-                                <button
+                                <button wire:click="$dispatch('delete-confirm', { id: {{ $document->id }} })"
                                     class="flex-1 px-4 py-2 bg-red-100 text-red-600 font-bold rounded-full text-sm hover:bg-red-200 transition">
                                     Delete
                                 </button>
@@ -373,12 +380,13 @@
                         </div>
                     </div>
                 @empty
-                    <div class="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
+                    <div class="flex flex-col items-center justify-center py-12 text-gray-400 dark:text-gray-500">
                         <i class="fas fa-folder-open text-5xl mb-3"></i>
                         <p class="text-lg font-medium">Tidak ada dokumen ditemukan</p>
                         <p class="text-sm mt-1">Mulai dengan menambahkan dokumen baru</p>
                     </div>
                 @endforelse
+
                 <div class="px-6 py-4">
                     {{ $documents->links('pagination::tailwind') }}
                 </div>
