@@ -99,7 +99,7 @@
         <!-- Main Content Area -->
         <div id="menu-content" class="flex flex-col flex-1 h-screen overflow-hidden bg-indigo-50/50 dark:bg-zinc-800 ">
             <!-- Top Navigation Bar -->
-            <header class="sticky top-0 z-20 py-[6px] container mx-auto px-8">
+            <header class="sticky top-0 z-20 container mx-auto px-10">
                 <div
                     class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mt-4 container mx-auto">
                     <!-- Main Content Section -->
