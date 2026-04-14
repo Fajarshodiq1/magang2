@@ -1,486 +1,1091 @@
-<div class="min-h-screen transition-colors duration-200">
-    <div
-        class="flex justify-between items-center mb-8 bg-white dark:bg-zinc-900 rounded-2xl p-6 sm:p-8 transition-colors duration-200">
-        <div>
-            <div class="flex items-center space-x-4">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
-                </svg>
+<div class="min-h-screen transition-colors duration-200" style="font-family: 'DM Sans', sans-serif;">
 
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $documents->total() }} Total
-                    Dokumen
-                </h1>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap');
+
+        :root {
+            --bg: #F5F4F0;
+            --surface: #FFFFFF;
+            --surface-2: #F9F8F5;
+            --border: #E8E6DF;
+            --text-primary: #1A1916;
+            --text-secondary: #6B6860;
+            --text-muted: #A8A59F;
+            --green: #1A7A4A;
+            --green-bg: #EAF5EF;
+            --green-border: #B8DFC9;
+            --yellow: #9A6E00;
+            --yellow-bg: #FEF8E8;
+            --yellow-border: #F0D98A;
+            --red: #B83232;
+            --red-bg: #FDEAEA;
+            --red-border: #F0B8B8;
+            --blue: #1A5FA8;
+            --blue-bg: #EAF0FA;
+            --blue-border: #B8CEF0;
+            --purple: #5A2DA8;
+            --purple-bg: #F0EAFA;
+            --purple-border: #CCB8F0;
+            --orange: #B85000;
+            --orange-bg: #FEF0E8;
+            --orange-border: #F0C8A0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Page Header */
+        .doc-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .doc-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .doc-icon-wrap {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .doc-count {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.1;
+        }
+
+        .doc-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Bulk Action Bar */
+        .bulk-bar {
+            background: var(--green-bg);
+            border: 1.5px solid var(--green-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .bulk-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bulk-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .bulk-count {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--green);
+        }
+
+        .bulk-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Card / Table Wrapper */
+        .table-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        /* Table Toolbar */
+        .table-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface-2);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .toolbar-left,
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .toolbar-label strong {
+            color: var(--text-primary);
+        }
+
+        /* Select / Input */
+        .select-sm {
+            height: 34px;
+            padding: 0 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            color: var(--text-primary);
+            font-size: 12px;
+            font-weight: 500;
+            font-family: 'DM Sans', sans-serif;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23A8A59F' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 28px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .select-sm:focus {
+            border-color: var(--green);
+        }
+
+        .checkbox-custom {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--green);
+            cursor: pointer;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead tr {
+            background: var(--surface-2);
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            padding: 10px 16px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+        }
+
+        th.center {
+            text-align: center;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.1s;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: var(--surface-2);
+        }
+
+        tbody tr.selected-row {
+            background: var(--green-bg);
+        }
+
+        td {
+            padding: 14px 16px;
+            vertical-align: middle;
+        }
+
+        td.center {
+            text-align: center;
+        }
+
+        /* Sort Button */
+        .sort-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0;
+            transition: color 0.15s;
+        }
+
+        .sort-btn:hover,
+        .sort-btn.active {
+            color: var(--green);
+        }
+
+        /* Avatar */
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            color: white;
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Doc name */
+        .doc-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+            display: block;
+        }
+
+        .doc-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .doc-meta .mono {
+            font-family: 'DM Mono', monospace;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .tag.green {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+
+        .tag.yellow {
+            background: var(--yellow-bg);
+            color: var(--yellow);
+        }
+
+        .tag.red {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+        .tag.blue {
+            background: var(--blue-bg);
+            color: var(--blue);
+        }
+
+        .tag.purple {
+            background: var(--purple-bg);
+            color: var(--purple);
+        }
+
+        .tag.orange {
+            background: var(--orange-bg);
+            color: var(--orange);
+        }
+
+        .tag.gray {
+            background: var(--surface-2);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        /* Archive info */
+        .archive-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            min-width: 60px;
+        }
+
+        .archive-val {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .archive-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .archive-row:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Security column */
+        .security-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .verify-link {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--blue);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.15s;
+        }
+
+        .verify-link:hover {
+            color: var(--purple);
+        }
+
+        /* Date */
+        .date-main {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .date-time {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: 'DM Mono', monospace;
+            margin-top: 2px;
+        }
+
+        /* Actions dropdown */
+        .action-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-btn-trigger {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .action-btn-trigger:hover {
+            background: var(--border);
+        }
+
+        .action-dropdown {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 6px);
+            z-index: 50;
+            width: 200px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+            overflow: hidden;
+        }
+
+        .action-group {
+            padding: 4px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .action-group:last-child {
+            border-bottom: none;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.12s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .action-item:hover {
+            background: var(--surface-2);
+            color: var(--text-primary);
+        }
+
+        .action-item.danger {
+            color: var(--red);
+        }
+
+        .action-item.danger:hover {
+            background: var(--red-bg);
+        }
+
+        .action-item-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 13px;
+        }
+
+        .ai-blue {
+            background: var(--blue-bg);
+            color: var(--blue);
+        }
+
+        .ai-yellow {
+            background: var(--yellow-bg);
+            color: var(--yellow);
+        }
+
+        .ai-indigo {
+            background: #EEF0FF;
+            color: #3730A3;
+        }
+
+        .ai-green {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+
+        .ai-purple {
+            background: var(--purple-bg);
+            color: var(--purple);
+        }
+
+        .ai-red {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+        /* Empty State */
+        .empty-state {
+            padding: 60px 24px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 24px;
+            color: var(--text-muted);
+        }
+
+        .empty-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .empty-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            max-width: 320px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Pagination bar */
+        .pagination-bar {
+            padding: 12px 20px;
+            border-top: 1px solid var(--border);
+            background: var(--surface-2);
+        }
+
+        /* Utility buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.15s;
+            text-decoration: none;
+        }
+
+        .btn-solid-green {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-solid-green:hover {
+            background: #155f3a;
+        }
+
+        .btn-ghost {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-ghost:hover {
+            background: var(--surface-2);
+            color: var(--text-primary);
+        }
+
+        .btn-danger-ghost {
+            background: transparent;
+            border: 1px solid var(--red-border);
+            color: var(--red);
+        }
+
+        .btn-danger-ghost:hover {
+            background: var(--red-bg);
+        }
+    </style>
+
+    <!-- Header -->
+    <div class="doc-header">
+        <div class="doc-header-left">
+            <div class="doc-icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" style="width:22px;height:22px;color:white">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z" />
+                </svg>
             </div>
-            <h2 class="text-gray-600 dark:text-gray-400 font-semibold text-[15px] mt-2">Lihat dan kelola dokumen
-                Anda
-                disini</h2>
+            <div>
+                <div class="doc-count">{{ $documents->total() }} Dokumen</div>
+                <div class="doc-subtitle">Kelola dan organisir arsip dokumen Anda</div>
+            </div>
         </div>
 
-        <div class="flex items-center space-x-3">
-            <!-- Add Document Button -->
-            <a href="/documents/create" wire:navigate
-                class="flex items-center space-x-2 px-6 py-3 font-semibold bg-green-700 hover:bg-green-800 dark:bg-green-600 dark:hover:bg-green-700 text-white rounded-full transition">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-                <span>
-                    Tambah Dokumen
+        @include('livewire.documents.partials.menu')
+    </div>
+
+    <!-- Filter -->
+    @include('livewire.documents.partials.filter-dropdown')
+
+    <!-- Bulk Action Bar -->
+    @if (count($selectedDocuments) > 0)
+        <div class="bulk-bar">
+            <div class="bulk-bar-left">
+                <div class="bulk-dot"></div>
+                <span class="bulk-count">{{ count($selectedDocuments) }} dokumen dipilih</span>
+                <button wire:click="$set('selectedDocuments', []); $set('selectAll', false)" class="btn btn-ghost"
+                    style="padding: 5px 10px; font-size:11px">
+                    Batal
+                </button>
+            </div>
+            <div class="bulk-bar-right">
+                <select wire:model="bulkAction" class="select-sm">
+                    <option value="">Pilih Aksi</option>
+                    <option value="delete">Hapus Terpilih</option>
+                    <option value="export">Export Terpilih</option>
+                </select>
+                <button wire:click="executeBulkAction" class="btn btn-solid-green">
+                    Jalankan
+                </button>
+            </div>
+        </div>
+    @endif
+
+    <!-- Table Card -->
+    <div class="table-card">
+
+        <!-- Toolbar -->
+        <div class="table-toolbar">
+            <div class="toolbar-left">
+                <label style="display:flex; align-items:center; gap:7px; cursor:pointer">
+                    <input type="checkbox" wire:model.live="selectAll" class="checkbox-custom">
+                    <span class="toolbar-label">Pilih Semua</span>
+                </label>
+
+                @if (count($selectedDocuments) > 0)
+                    <div style="width:1px; height:16px; background:var(--border)"></div>
+                    <span class="toolbar-label">
+                        <strong style="color:var(--green)">{{ count($selectedDocuments) }}</strong> dipilih
+                    </span>
+                @endif
+            </div>
+
+            <div class="toolbar-right">
+                <span class="toolbar-label">
+                    <strong>{{ $documents->firstItem() ?? 0 }}</strong>–<strong>{{ $documents->lastItem() ?? 0 }}</strong>
+                    dari <strong>{{ $documents->total() }}</strong>
                 </span>
-            </a>
-        </div>
-    </div>
-    <div class="bg-white dark:bg-zinc-900 rounded-2xl sm:rounded-[14px] p-4 sm:p-8 mb-4 sm:mb-6">
-        <div class="flex items-center gap-2 mb-4">
-            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[#7F8190] dark:text-zinc-400" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-            <h3 class="text-xs sm:text-sm font-semibold text-[#0A090B] dark:text-white uppercase tracking-wide">
-                Filter & Pencarian
-            </h3>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-            <!-- Pencarian -->
-            <div>
-                <label class="block text-xs sm:text-sm font-bold text-[#0A090B] dark:text-white mb-2">
-                    Pencarian
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[#7F8190] dark:text-zinc-500" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                    <input type="text" wire:model.live.debounce.300ms="search"
-                        placeholder="Cari judul, deskripsi, atau nama file..."
-                        class="w-full h-11 sm:h-[52px] pl-10 sm:pl-12 pr-3 sm:pr-4 rounded-full border border-[#EEEEEE] dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-[#0A090B] dark:text-white font-semibold placeholder:text-[#7F8190] placeholder:font-semibold outline-none focus:border-indigo-800 focus:ring-1 focus:ring-indigo-800 transition-all dark:focus:ring-white dark:focus:border-white">
-                </div>
-            </div>
-
-            <!-- Tipe File Filter -->
-            <div>
-                <label class="block text-xs sm:text-sm font-bold text-[#0A090B] dark:text-white mb-2">
-                    Tipe File
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none z-10">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[#7F8190] dark:text-zinc-500" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                    <select wire:model.live="fileType"
-                        class="w-full h-11 sm:h-[52px] pl-10 sm:pl-12 pr-10 sm:pr-12 rounded-full border border-[#EEEEEE] dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-[#0A090B] dark:text-white font-semibold outline-none focus:border-indigo-800 focus:ring-1 focus:ring-indigo-800 dark:focus:border-white dark:focus:ring-white transition-all appearance-none">
-                        <option value="">Semua Tipe</option>
-                        <option value="pdf">PDF</option>
-                        <option value="doc">DOC</option>
-                        <option value="docx">DOCX</option>
-                    </select>
-                    <div class="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center pointer-events-none">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[#7F8190] dark:text-zinc-500" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </div>
-                </div>
+                <select wire:model.live="perPage" class="select-sm">
+                    <option value="10">10 / hal</option>
+                    <option value="25">25 / hal</option>
+                    <option value="50">50 / hal</option>
+                    <option value="100">100 / hal</option>
+                </select>
             </div>
         </div>
-    </div>
-    <div class="min-h-screen bg-white dark:bg-zinc-900 rounded-2xl transition-colors duration-200">
-        <div class="container mx-auto px-8 py-4">
-            <!-- Table -->
-            {{-- <div
-                class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-700 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-zinc-700">
-                        <thead class="bg-gray-50 dark:bg-zinc-900">
-                            <tr>
-                                <th
-                                    class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                                    Pembuat
-                                </th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-800 transition"
-                                    wire:click="sortBy('title')">
-                                    <div class="flex items-center space-x-1">
-                                        <span>Judul</span>
-                                        @if ($sortField === 'title')
-                                            <i
-                                                class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} text-green-600"></i>
+
+        <!-- Table -->
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:44px; padding-left:20px;">
+                            <input type="checkbox" wire:model.live="selectAll" class="checkbox-custom">
+                        </th>
+                        <th style="min-width:260px">
+                            <button wire:click="sortBy('title')"
+                                class="sort-btn {{ $sortField === 'title' ? 'active' : '' }}">
+                                Dokumen
+                                @if ($sortField === 'title')
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                        <path
+                                            d="{{ $sortDirection === 'asc' ? 'M4.5 15.75l7.5-7.5 7.5 7.5' : 'M19.5 8.25l-7.5 7.5-7.5-7.5' }}" />
+                                    </svg>
+                                @else
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                        style="opacity:0.3">
+                                        <path d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+                                    </svg>
+                                @endif
+                            </button>
+                        </th>
+                        <th style="min-width:180px">Informasi Arsip</th>
+                        <th class="center">Tipe</th>
+                        <th class="center" style="min-width:130px">Security</th>
+                        <th>
+                            <button wire:click="sortBy('created_at')"
+                                class="sort-btn {{ $sortField === 'created_at' ? 'active' : '' }}">
+                                Tanggal
+                                @if ($sortField === 'created_at')
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                        <path
+                                            d="{{ $sortDirection === 'asc' ? 'M4.5 15.75l7.5-7.5 7.5 7.5' : 'M19.5 8.25l-7.5 7.5-7.5-7.5' }}" />
+                                    </svg>
+                                @else
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                        style="opacity:0.3">
+                                        <path d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+                                    </svg>
+                                @endif
+                            </button>
+                        </th>
+                        <th class="center" style="min-width:100px">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($documents as $document)
+                        <tr class="{{ in_array($document->id, $selectedDocuments) ? 'selected-row' : '' }}">
+                            <!-- Checkbox -->
+                            <td style="padding-left:20px">
+                                <input type="checkbox" wire:model.live="selectedDocuments"
+                                    value="{{ $document->id }}" class="checkbox-custom">
+                            </td>
+
+                            <!-- Document -->
+                            <td>
+                                <div style="display:flex; align-items:center; gap:10px">
+                                    <div class="avatar">
+                                        @if ($document->user->profile_photo && Storage::exists($document->user->profile_photo))
+                                            <img src="{{ Storage::url($document->user->profile_photo) }}"
+                                                alt="{{ $document->user->name }}">
+                                        @else
+                                            {{ strtoupper(substr($document->user->name, 0, 2)) }}
                                         @endif
                                     </div>
-                                </th>
-                                <th
-                                    class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                                    File
-                                </th>
-                                <th
-                                    class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                                    Ukuran
-                                </th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-800 transition"
-                                    wire:click="sortBy('created_at')">
-                                    <div class="flex items-center space-x-1">
-                                        <span>Tanggal Upload</span>
-                                        @if ($sortField === 'created_at')
-                                            <i
-                                                class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} text-green-600"></i>
-                                        @endif
-                                    </div>
-                                </th>
-                                <th
-                                    class="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                                    Aksi
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200 dark:divide-zinc-700">
-                            @forelse($documents as $document)
-                                <tr class="hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition">
-                                    <td class="px-6 py-4">
-                                        <div class="text-sm font-semibold text-gray-900 dark:text-white">
-                                            {{ $document->user ? $document->user->name : 'Unknown' }}</div>
-                                        <div class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                                            {{ $document->user ? $document->user->email : '' }}</div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="text-sm font-semibold text-gray-900 dark:text-white">
-                                            {{ $document->title }}</div>
-                                        @if ($document->description)
-                                            <div class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                                                {{ Str::limit($document->description, 50) }}</div>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center space-x-2">
-                                            <span
-                                                class="px-2.5 py-1 text-xs font-semibold rounded-md 
-                                                {{ $document->file_type === 'pdf'
-                                                    ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'
-                                                    : 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800' }}">
-                                                {{ strtoupper($document->file_type) }}
+                                    <div style="min-width:0">
+                                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                                            <span class="doc-name" title="{{ $document->title }}">
+                                                {{ $document->title }}
                                             </span>
-                                            <span
-                                                class="text-sm text-gray-600 dark:text-gray-400">{{ Str::limit($document->file_name, 30) }}</span>
+                                            @if ($document->category)
+                                                <span class="tag purple">{{ $document->category->name }}</span>
+                                            @endif
                                         </div>
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                        {{ $document->formatted_file_size }}
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                        {{ $document->created_at->format('d M Y H:i') }}
-                                    </td>
-                                    <td class="px-6 py-4 text-right text-sm font-medium">
-                                        <div class="flex justify-end items-center space-x-3">
-                                            <button wire:click="preview({{ $document->id }})"
-                                                class="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 transition"
-                                                title="Preview">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                </svg>
-                                            </button>
-                                            <a href="{{ route('documents.download', $document->id) }}"
-                                                class="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 transition"
-                                                title="Download">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" />
-                                                </svg>
-                                            </a>
-
-                                            <a href="/documents/{{ $document->id }}/edit" wire:navigate
-                                                class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition"
-                                                title="Edit">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M11 4h9M4 20l4-1 11-11a2.5 2.5 0 10-3.5-3.5L4.5 15.5 4 20z" />
-                                                </svg>
-                                            </a>
-
-                                            <button
-                                                wire:click="$dispatch('delete-confirm', { id: {{ $document->id }} })"
-                                                class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition"
-                                                title="Delete">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M6 7h12M9 7V4h6v3M8 7l1 13h6l1-13" />
-                                                </svg>
-                                            </button>
-
+                                        <div class="doc-meta">
+                                            <span>{{ $document->user->name }}</span>
+                                            <span style="color:var(--border)">·</span>
+                                            <span class="mono">{{ $document->formatted_file_size }}</span>
                                         </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="px-6 py-12 text-center">
-                                        <div
-                                            class="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
-                                            <i class="fas fa-folder-open text-5xl mb-3"></i>
-                                            <p class="text-lg font-medium">Tidak ada dokumen ditemukan</p>
-                                            <p class="text-sm mt-1">Mulai dengan menambahkan dokumen baru</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination -->
-                <div class="px-6 py-4 border-t border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900">
-                    {{ $documents->links() }}
-                </div>
-            </div> --}}
-            {{-- devider --}}
-            <div class="py-2">
-                <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Dokumen Terbaru</h2>
-            </div>
-            <div class="w-full overflow-x-auto flex flex-col space-y-6">
-                @forelse ($documents as $document)
-                    <div class="w-full flex flex-col">
-                        <!-- Desktop View -->
-                        <div
-                            class="hidden lg:grid lg:grid-cols-12 lg:gap-4 w-full px-5 py-7 rounded-2xl hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition">
-                            <!-- User Info -->
-                            <div class="col-span-3 flex items-center gap-4 min-w-0">
-                                <img src="{{ Storage::url($document->user->profile_photo) }}" alt="User Avatar"
-                                    class="h-12 w-12 rounded-full object-cover flex-shrink-0">
-                                <div class="min-w-0 flex-1">
-                                    <div class="text-sm font-bold text-gray-900 dark:text-white truncate">
-                                        {{ $document->user->name }}
-                                    </div>
-                                    <div class="text-sm text-gray-500 dark:text-gray-400 font-semibold truncate">
-                                        {{ $document->user->email }}
                                     </div>
                                 </div>
-                            </div>
+                            </td>
+
+                            <!-- Archive Info -->
+                            <td>
+                                @if ($document->archiveClassification)
+                                    <div class="archive-row">
+                                        <span class="archive-label">Kode</span>
+                                        <div style="display:flex;flex-direction:column;gap:2px">
+                                            <span class="tag blue">{{ $document->archiveClassification->code }}</span>
+                                            <span class="archive-val" style="font-size:11px">
+                                                {{ Str::limit($document->archiveClassification->name, 28) }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="archive-row">
+                                        <span class="archive-label">Kode</span>
+                                        <span class="archive-val">{{ $document->kode_arsip ?? '—' }}</span>
+                                    </div>
+                                @endif
+                                <div class="archive-row">
+                                    <span class="archive-label">Jenis</span>
+                                    <span class="archive-val">{{ $document->jenis_arsip }}</span>
+                                </div>
+                                <div class="archive-row">
+                                    <span class="archive-label">No. Def</span>
+                                    <span class="archive-val"
+                                        style="font-family:'DM Mono',monospace;font-size:11px">{{ $document->no_definitif }}</span>
+                                </div>
+                            </td>
 
                             <!-- File Type -->
-                            <div class="col-span-1 flex items-center justify-center">
+                            <td class="center">
                                 <span
-                                    class="px-3.5 py-2 text-xs font-bold rounded-full whitespace-nowrap
-                        {{ $document->file_type === 'pdf'
-                            ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'
-                            : 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800' }}">
+                                    class="tag {{ $document->file_type === 'pdf' ? 'red' : ($document->file_type === 'doc' || $document->file_type === 'docx' ? 'blue' : 'gray') }}">
+                                    @if ($document->file_type === 'pdf')
+                                        <svg width="10" height="10" fill="currentColor" viewBox="0 0 20 20">
+                                            <path
+                                                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
+                                        </svg>
+                                    @else
+                                        <svg width="10" height="10" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    @endif
                                     {{ strtoupper($document->file_type) }}
                                 </span>
-                            </div>
+                            </td>
 
-                            <!-- Document Info -->
-                            <div class="col-span-3 flex flex-col justify-center min-w-0">
-                                <div class="text-sm font-bold text-gray-900 dark:text-white truncate">
-                                    {{ $document->title }}
-                                </div>
-                                @if ($document->description)
-                                    <div class="text-sm text-gray-500 dark:text-gray-400 mt-0.5 font-semibold truncate">
-                                        {{ Str::limit($document->description, 50) }}
-                                    </div>
-                                @endif
-                            </div>
+                            <!-- Security -->
+                            <td class="center">
+                                <div class="security-col">
+                                    @if ($document->is_confidential)
+                                        {{-- Level badge --}}
+                                        @if ($document->security_level === 'sangat_rahasia')
+                                            <span class="tag red">
+                                                <svg width="9" height="9" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                                Sgt Rahasia
+                                            </span>
+                                        @elseif($document->security_level === 'rahasia')
+                                            <span class="tag orange">
+                                                <svg width="9" height="9" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                                Rahasia
+                                            </span>
+                                        @else
+                                            <span class="tag gray">Normal</span>
+                                        @endif
 
-                            <!-- File Size -->
-                            <div class="col-span-1 flex items-center justify-center">
-                                <div class="text-sm font-bold text-gray-900 dark:text-white whitespace-nowrap">
-                                    {{ $document->formatted_file_size }}
+                                        {{-- Status badge --}}
+                                        <span
+                                            class="tag {{ $document->security_status === 'secured' ? 'green' : ($document->security_status === 'partial' ? 'yellow' : 'gray') }}">
+                                            {{ $document->security_status === 'secured' ? 'Secured' : ($document->security_status === 'partial' ? 'Partial' : 'Basic') }}
+                                        </span>
+
+                                        {{-- Verify link --}}
+                                        <a href="{{ route('documents.verify', $document->id) }}" class="verify-link">
+                                            <svg width="11" height="11" fill="currentColor"
+                                                viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            Verify
+                                        </a>
+
+                                        @if ($document->document_hash)
+                                            <button
+                                                onclick="showHashModal('{{ $document->id }}', '{{ $document->title }}', '{{ $document->document_hash }}', '{{ $document->file_checksum }}')"
+                                                class="verify-link"
+                                                style="background:none; border:none; cursor:pointer; font-family:'DM Sans',sans-serif;">
+                                                <svg width="11" height="11" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                                Hash
+                                            </button>
+                                        @endif
+                                    @else
+                                        <span class="tag gray">Normal</span>
+                                    @endif
                                 </div>
-                            </div>
+                            </td>
 
                             <!-- Date -->
-                            <div class="col-span-2 flex items-center justify-center">
-                                <div class="text-sm font-bold text-gray-900 dark:text-white whitespace-nowrap">
-                                    {{ $document->created_at->format('d M Y H:i') }}
-                                </div>
-                            </div>
+                            <td>
+                                <div class="date-main">{{ $document->created_at->format('d M Y') }}</div>
+                                <div class="date-time">{{ $document->created_at->format('H:i') }} WIB</div>
+                            </td>
 
                             <!-- Actions -->
-                            <div class="col-span-2 flex items-center justify-end gap-2">
-                                <a href="/documents/{{ $document->id }}/edit" wire:navigate
-                                    class="px-7 py-3 bg-blue-100 text-blue-600 font-bold rounded-full text-sm hover:bg-blue-200 transition whitespace-nowrap">
-                                    Edit
-                                </a>
-                                <button wire:click="$dispatch('delete-confirm', { id: {{ $document->id }} })"
-                                    class="px-7 py-3 bg-red-100 text-red-600 font-bold rounded-full text-sm hover:bg-red-200 transition whitespace-nowrap">
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
+                            <td class="center">
+                                <div class="action-wrap" x-data="{ open: false }">
+                                    <button @click="open = !open" @click.outside="open = false"
+                                        class="action-btn-trigger">
+                                        Aksi
+                                        <svg width="12" height="12" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
 
-                        <!-- Mobile/Tablet View -->
-                        <div
-                            class="lg:hidden w-full p-4 space-y-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition">
-                            <!-- User Info & File Type -->
-                            <div class="flex items-center gap-3">
-                                <img src="{{ Storage::url($document->user->profile_photo) }}" alt="User Avatar"
-                                    class="h-12 w-12 rounded-full object-cover flex-shrink-0">
-                                <div class="flex-1 min-w-0">
-                                    <div class="text-sm font-bold text-gray-900 dark:text-white truncate">
-                                        {{ $document->user->name }}
-                                    </div>
-                                    <div class="text-sm text-gray-500 dark:text-gray-400 font-semibold truncate">
-                                        {{ $document->user->email }}
-                                    </div>
-                                </div>
-                                <span
-                                    class="px-3 py-1.5 rounded-full text-xs font-bold flex-shrink-0
-                        {{ $document->file_type === 'pdf'
-                            ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'
-                            : 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800' }}">
-                                    {{ strtoupper($document->file_type) }}
-                                </span>
-                            </div>
+                                    <div x-show="open" x-transition:enter="transition ease-out duration-100"
+                                        x-transition:enter-start="opacity-0 scale-95"
+                                        x-transition:enter-end="opacity-100 scale-100"
+                                        x-transition:leave="transition ease-in duration-75"
+                                        x-transition:leave-start="opacity-100 scale-100"
+                                        x-transition:leave-end="opacity-0 scale-95" class="action-dropdown"
+                                        style="display:none">
 
-                            <!-- Document Info -->
-                            <div class="space-y-1">
-                                <div class="text-sm font-bold text-gray-900 dark:text-white truncate">
-                                    {{ $document->title }}
-                                </div>
-                                @if ($document->description)
-                                    <div class="text-sm text-gray-500 dark:text-gray-400 font-semibold line-clamp-2">
-                                        {{ $document->description }}
-                                    </div>
-                                @endif
-                            </div>
+                                        <!-- Primary -->
+                                        <div class="action-group">
+                                            <button wire:click="preview({{ $document->id }})" @click="open = false"
+                                                class="action-item">
+                                                <div class="action-item-icon ai-blue">
+                                                    <svg width="13" height="13" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    </svg>
+                                                </div>
+                                                Preview
+                                            </button>
 
-                            <!-- Meta Info -->
-                            <div class="flex items-center justify-between text-sm">
-                                <div class="font-bold text-gray-900 dark:text-white">
-                                    {{ $document->formatted_file_size }}
-                                </div>
-                                <div class="font-bold text-gray-900 dark:text-white">
-                                    {{ $document->created_at->format('d M Y H:i') }}
-                                </div>
-                            </div>
-
-                            <!-- Actions -->
-                            <div class="flex items-center gap-2">
-                                <a href="/documents/{{ $document->id }}/edit" wire:navigate
-                                    class="flex-1 px-4 py-2 bg-blue-100 text-blue-600 font-bold rounded-full text-sm text-center hover:bg-blue-200 transition">
-                                    Edit
-                                </a>
-                                <button wire:click="$dispatch('delete-confirm', { id: {{ $document->id }} })"
-                                    class="flex-1 px-4 py-2 bg-red-100 text-red-600 font-bold rounded-full text-sm hover:bg-red-200 transition">
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="flex flex-col items-center justify-center py-12 text-gray-400 dark:text-gray-500">
-                        <i class="fas fa-folder-open text-5xl mb-3"></i>
-                        <p class="text-lg font-medium">Tidak ada dokumen ditemukan</p>
-                        <p class="text-sm mt-1">Mulai dengan menambahkan dokumen baru</p>
-                    </div>
-                @endforelse
-
-                <div class="px-6 py-4">
-                    {{ $documents->links('pagination::tailwind') }}
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Preview Modal -->
-        @if ($showPreview && $previewDocument)
-            <div class="fixed inset-0 z-50 overflow-y-auto">
-                <!-- Backdrop -->
-                <div class="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm transition-opacity"
-                    wire:click="closePreview"></div>
-
-                <!-- Modal -->
-                <div class="flex items-center justify-center min-h-screen p-4">
-                    <div class="relative bg-white dark:bg-zinc-800 rounded-xl shadow-2xl border border-gray-200 dark:border-zinc-700 w-full max-w-6xl max-h-[90vh] flex flex-col"
-                        @click.stop>
-                        <!-- Header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b border-gray-200 dark:border-zinc-700">
-                            <div class="flex-1 min-w-0 mr-4">
-                                <h3 class="text-lg font-bold text-gray-900 dark:text-white truncate">
-                                    {{ $previewDocument->title }}</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
-                                    {{ $previewDocument->file_name }}</p>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <a href="{{ route('documents.download', $previewDocument->id) }}"
-                                    class="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition font-medium">
-                                    <i class="fas fa-download mr-2"></i>Download
-                                </a>
-                                <button wire:click="closePreview"
-                                    class="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition">
-                                    <i class="fas fa-times text-xl"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Preview Content -->
-                        <div class="flex-1 overflow-hidden bg-gray-100 dark:bg-zinc-900">
-                            @if ($previewDocument->file_type === 'pdf')
-                                <iframe src="{{ Storage::url($previewDocument->file_path) }}" class="w-full h-full"
-                                    style="min-height: 600px;" frameborder="0"></iframe>
-                            @else
-                                <iframe
-                                    src="https://docs.google.com/viewer?url={{ urlencode(url(Storage::url($previewDocument->file_path))) }}&embedded=true"
-                                    class="w-full h-full" style="min-height: 600px;" frameborder="0">
-                                    <div class="flex items-center justify-center h-full">
-                                        <div class="text-center p-8 bg-white dark:bg-zinc-800 rounded-lg">
-                                            <i
-                                                class="fas fa-file-word text-6xl text-blue-500 dark:text-blue-400 mb-4"></i>
-                                            <p class="text-gray-700 dark:text-gray-300 mb-4 font-medium">Preview tidak
-                                                tersedia untuk file ini.</p>
-                                            <a href="{{ route('documents.download', $previewDocument->id) }}"
-                                                class="inline-flex items-center px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition font-medium">
-                                                <i class="fas fa-download mr-2"></i>Download untuk melihat
+                                            <a href="/documents/{{ $document->id }}/edit" wire:navigate
+                                                class="action-item">
+                                                <div class="action-item-icon ai-yellow">
+                                                    <svg width="13" height="13" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                </div>
+                                                Edit
                                             </a>
                                         </div>
-                                    </div>
-                                </iframe>
-                            @endif
-                        </div>
 
-                        <!-- Footer -->
-                        <div class="p-4 border-t border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900">
-                            <div class="flex items-center justify-between text-sm">
-                                <div class="text-gray-600 dark:text-gray-400">
-                                    <span class="font-semibold">Ukuran:</span>
-                                    <span class="ml-1">{{ $previewDocument->formatted_file_size }}</span>
+                                        @if ($document->is_confidential)
+                                            <!-- Security -->
+                                            <div class="action-group">
+                                                <a href="{{ route('documents.verify', $document->id) }}" wire:navigate
+                                                    class="action-item">
+                                                    <div class="action-item-icon ai-indigo">
+                                                        <svg width="13" height="13" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24"
+                                                            stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                                        </svg>
+                                                    </div>
+                                                    Verify Security
+                                                </a>
+
+                                                @if ($document->qr_code_path)
+                                                    <a href="{{ route('documents.qr.download', $document->id) }}"
+                                                        class="action-item">
+                                                        <div class="action-item-icon ai-green">
+                                                            <svg width="13" height="13" fill="none"
+                                                                stroke="currentColor" viewBox="0 0 24 24"
+                                                                stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                                                            </svg>
+                                                        </div>
+                                                        Download QR
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        @endif
+
+                                        @if ($document->hasEmbeddedQR())
+                                            <!-- Downloads -->
+                                            <div class="action-group">
+                                                <a href="{{ route('documents.download-embedded', $document) }}"
+                                                    class="action-item">
+                                                    <div class="action-item-icon ai-purple">
+                                                        <svg width="13" height="13" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24"
+                                                            stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                                                        </svg>
+                                                    </div>
+                                                    Download + QR
+                                                </a>
+                                            </div>
+                                        @endif
+
+                                        <!-- Danger -->
+                                        <div class="action-group">
+                                            <button
+                                                wire:click="$dispatch('delete-confirm', { id: {{ $document->id }} })"
+                                                @click="open = false" class="action-item danger">
+                                                <div class="action-item-icon ai-red">
+                                                    <svg width="13" height="13" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </div>
+                                                Hapus
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="text-gray-600 dark:text-gray-400">
-                                    <span class="font-semibold">Diupload:</span>
-                                    <span
-                                        class="ml-1">{{ $previewDocument->created_at->format('d M Y H:i') }}</span>
+                            </td>
+                        </tr>
+
+                    @empty
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" style="width:28px;height:28px">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 00-2.15-1.588H6.911a2.25 2.25 0 00-2.15 1.588L2.35 13.177a2.25 2.25 0 00-.1.661z" />
+                                        </svg>
+                                    </div>
+                                    <div class="empty-title">Tidak ada dokumen ditemukan</div>
+                                    <div class="empty-desc">
+                                        Mulai dengan menambahkan dokumen baru atau ubah filter pencarian Anda
+                                    </div>
                                 </div>
-                                <div>
-                                    <span
-                                        class="px-2.5 py-1 text-xs font-semibold rounded-md
-                                        {{ $previewDocument->file_type === 'pdf'
-                                            ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'
-                                            : 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800' }}">
-                                        {{ strtoupper($previewDocument->file_type) }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        @if ($documents->hasPages())
+            <div class="pagination-bar">
+                {{ $documents->links('pagination::tailwind') }}
             </div>
         @endif
     </div>
 
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v3.x.x/dist/cdn.min.js" defer></script>
+    <!-- Modals -->
+    @include('livewire.documents.partials.import-modal')
+    @include('livewire.documents.partials.preview-modal')
+    @include('livewire.documents.partials.hash-modal')
+
     <script>
         document.addEventListener('livewire:initialized', () => {
             Livewire.on('delete-confirm', (event) => {
@@ -490,6 +1095,37 @@
                     });
                 }
             });
+        });
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.createElement('div');
+                toast.style.cssText =
+                    'position:fixed;bottom:20px;right:20px;background:#1A7A4A;color:white;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:600;font-family:"DM Sans",sans-serif;z-index:9999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.15)';
+                toast.innerHTML =
+                    '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Hash disalin!';
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 2000);
+            });
+        }
+
+        function showHashModal(id, title, documentHash, fileChecksum) {
+            document.getElementById('hashModalTitle').textContent = title;
+            document.getElementById('documentHash').textContent = documentHash;
+            document.getElementById('fileChecksum').textContent = fileChecksum || 'N/A';
+            document.getElementById('hashModal').classList.remove('hidden');
+        }
+
+        function closeHashModal() {
+            document.getElementById('hashModal').classList.add('hidden');
+        }
+
+        function copyHash(elementId) {
+            copyToClipboard(document.getElementById(elementId).textContent);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeHashModal();
         });
     </script>
 </div>
